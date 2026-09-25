@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>SSC CGL 2026 Polity — Part 1 Test</title>
+<style>
+:root { --bg:#f5f7fb; --card:#fff; --text:#172033; --muted:#667085; --border:#d9dee8; --accent:#2563eb; --good:#16803c; --bad:#c62828; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+.header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border);padding:12px 14px}
+.title{font-size:20px;font-weight:700;margin-bottom:10px}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{padding:7px 10px;border-radius:999px;background:#eef2f7;font-size:13px;font-weight:700}
+.stat.correct{background:#e8f7ee;color:var(--good)}
+.stat.wrong{background:#fdecec;color:var(--bad)}
+.stat.unvisited{background:#fff4db;color:#8a5a00}
+.progress{height:8px;background:#e9edf3;border-radius:10px;overflow:hidden;margin-top:10px}
+.progress>div{height:100%;background:var(--accent);width:0}
+.container{max-width:900px;margin:18px auto;padding:0 12px 40px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.qnum{font-weight:800;color:var(--accent);margin-bottom:8px}
+.question{font-size:17px;line-height:1.5;font-weight:600;margin-bottom:14px}
+.option{display:block;width:100%;text-align:left;border:1px solid var(--border);background:#fff;border-radius:10px;padding:12px;margin:8px 0;font-size:15px;cursor:pointer}
+.option:hover{border-color:var(--accent)}
+.option.selected{border-color:var(--accent);background:#eef4ff}
+.option.correct{border-color:var(--good);background:#e8f7ee;color:#11652f}
+.option.wrong{border-color:var(--bad);background:#fdecec;color:#a61b1b}
+.option:disabled{cursor:default}
+.option.result-correct::after{content:'✓';float:right;font-size:20px;font-weight:800;color:var(--good);margin-left:10px}
+.option.result-wrong::after{content:'✕';float:right;font-size:20px;font-weight:800;color:var(--bad);margin-left:10px}
+.option.correct-answer::after{content:'✓';float:right;font-size:20px;font-weight:800;color:var(--good);margin-left:10px}
+.feedback{margin-top:12px;padding:12px;border-radius:10px;background:#f3f5f8;line-height:1.5}
+.feedback.good{background:#e8f7ee}
+.feedback.bad{background:#fdecec}
+.explanation{margin-top:8px}
+
+
+.finish-test-btn{border:0;background:#172033;color:#fff;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer}
+.finish-test-btn:hover{background:#0f172a}
+.finish-summary{margin-top:12px;padding:14px;border-radius:10px;background:#f8fafc;border:1px solid var(--border);line-height:1.6}
+
+.collections{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.collection-btn{border:1px solid var(--border);background:#fff;color:var(--text);padding:7px 10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+.collection-btn:hover{border-color:var(--accent)}
+.collection-panel{display:none;margin-top:10px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px}
+.collection-panel.show{display:block}
+.collection-title{font-size:13px;font-weight:800;margin-bottom:7px}
+.collection-list{display:flex;flex-wrap:wrap;gap:6px}
+.collection-item{border:1px solid var(--border);background:#fff;border-radius:7px;padding:6px 9px;font-size:12px;cursor:pointer}
+.collection-item:hover{border-color:var(--accent);color:var(--accent)}
+
+.final{display:none;background:#fff;border:2px solid var(--accent);border-radius:14px;padding:20px;margin:20px 0;font-size:17px}
+.reset{border:0;background:var(--accent);color:#fff;padding:11px 16px;border-radius:9px;font-weight:700;cursor:pointer}
+@media(max-width:600px){.title{font-size:18px}.question{font-size:16px}.container{padding:0 8px 30px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="title">SSC CGL 2026 Polity — Part 1 Online Test</div>
+  <div class="stats">
+    <div class="stat correct">Correct: <span id="correct">0</span></div>
+    <div class="stat wrong">Incorrect: <span id="wrong">0</span></div>
+    <div class="stat unvisited">Unvisited: <span id="unvisited">70</span></div>
+    <div class="stat">Attempted: <span id="attempted">0</span>/70</div>
+  </div>
+  <div class="progress"><div id="progress"></div></div>
+  <div style="margin-top:8px;font-size:12px;color:#667085">
+    <span style="color:#16803c;font-weight:700">✓ Correct</span>
+    &nbsp;&nbsp;
+    <span style="color:#c62828;font-weight:700">✕ Incorrect</span>
+  </div>
+  <div style="margin-top:10px">
+    <button class="finish-test-btn" onclick="finishTest()">Finish Test</button>
+  </div>
+  <div class="collections">
+    <button class="collection-btn" onclick="toggleCollection('correct')">✓ Correct Collection <span id="correctCount2">0</span></button>
+    <button class="collection-btn" onclick="toggleCollection('wrong')">✕ Incorrect Collection <span id="wrongCount2">0</span></button>
+    <button class="collection-btn" onclick="toggleCollection('unvisited')">○ Unvisited Collection <span id="unvisitedCount2">70</span></button>
+  </div>
+  <div id="collectionPanel" class="collection-panel">
+    <div id="collectionTitle" class="collection-title"></div>
+    <div id="collectionList" class="collection-list"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div id="questions"></div>
+  <div class="final" id="final"></div>
+</div>
+
+<script>
+const questions = [{"num":213,"page":261,"question":"Who can dissolve the House of the People of India before its term ends?","options":{"A":"President on Prime minister’s advice","B":"Speaker of the House of the People","C":"Chief Justice of India","D":"Election Commission"},"correct":"A","answer_line":"Answer: (A) President on Prime minister’s advice","explanation":"**Answer:** President on Prime minister’s advice. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":214,"page":262,"question":"Which article empowers the president to dissolve the Rajya Sabha?","options":{"A":"Article 83","B":"Article 84","C":"Article 85","D":"None"},"correct":"D","answer_line":"Answer: (D) None","explanation":"**Answer:** None. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":215,"page":264,"question":"Which of the following statements is are correct regarding the role of the Rajya Sabha in special legislative and emergency situations? 1) Under Article 249, a Rajya Sabha resolution allowing Parliament to legislate on State List subjects remains valid for one year 249, 2) The Parliament can extend a proclamation of President's Rule only with the concurrence of the Rajya Sabha,","options":{"A":"Only 1","B":"Only 2","C":"Both 1 and 2","D":"Neither 1 nor 2"},"correct":"A","answer_line":"Answer: (A) Only 1","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":216,"page":268,"question":"Who is appointed by the President and acts as the nominal head of the executive in an Indian State?","options":{"A":"Chief Minister","B":"Advocate General","C":"Governor","D":"Chief Secretary"},"correct":"C","answer_line":"Answer: (C) Governor","explanation":"**Answer:** Governor. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":217,"page":269,"question":"Who appoints the governor of a state?","options":{"A":"Chief Minister","B":"Parliament","C":"President of India","D":"Prime Minister"},"correct":"C","answer_line":"Answer: (C) President of India","explanation":"**Answer:** President of India. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":218,"page":270,"question":"What is the primary role of the Governor regarding most State universities?","options":{"A":"He she is the ex-officio Chancellor with the power to appoint the Vice-Chancellor. ( - )","B":"He she serves as the Vice-Chancellor, directly managing academic affairs. ( - )","C":"He she manages all financial transactions and budgets of the university.","D":"He she has no constitutional role, as university education is a Concurrent List subject. (, )"},"correct":"A","answer_line":"Answer: (A) He she is the ex-officio Chancellor with the power to appoint the Vice-Chancellor. ( - )","explanation":"**Answer:** He she is the ex-officio Chancellor with the power to appoint the Vice-Chancellor. ( - ). **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":219,"page":271,"question":"Among the listed categories, which type of power does the Governor not possess under the Indian Constitution?","options":{"A":"Diplomatic power","B":"Executive power","C":"Legislative power","D":"Judicial power"},"correct":"A","answer_line":"Answer: (A) Diplomatic power","explanation":"**Answer:** Diplomatic power. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":220,"page":272,"question":"Which article of the Indian Constitution is related with the Special address by the Governor?","options":{"A":"Article 175","B":"Article 176","C":"Article 177","D":"Article 178"},"correct":"B","answer_line":"Answer: (B) Article 176","explanation":"**Answer:** Article 176. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":221,"page":273,"question":"A Bill passed by the Indian State Legislature is sent to the Governor under _______. ______","options":{"A":"Article 200","B":"Article 201","C":"Article 202","D":"Article 203"},"correct":"A","answer_line":"Answer: (A) Article 200","explanation":"**Answer:** Article 200. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":222,"page":274,"question":"A State Bill reserved for the President under Article 200 becomes law only when: 200","options":{"A":"Governor approves","B":"Chief Minister recommends","C":"President assents","D":"Speaker certifies"},"correct":"C","answer_line":"Answer: (C) President assents","explanation":"**Answer:** President assents. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":223,"page":275,"question":"Fill in the blanks: Even after a Bill is passed by the State Legislature, the Governor may forward it to the _____ for consideration., _____","options":{"A":"Chief Minister","B":"Speaker","C":"President","D":"Prime Minister"},"correct":"C","answer_line":"Answer: (C) President","explanation":"**Answer:** President. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":224,"page":276,"question":"Consider the following statements: 1. President can dissolve Lok Sabha on his own discretion 2. Governor appoints Chief Minister in a hung assembly 3. Governor has no role in Money Bills Which of the above is are correct?","options":{"A":"2 only","B":"1 only","C":"3 only","D":"1, 2 and 3"},"correct":"A","answer_line":"Answer: (A) 2 only","explanation":"**Answer:** 2 only. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":225,"page":277,"question":"Which of the following statements is are correct? 1) The Governor's discretionary power to recommend President's Rule is mentioned in Article 356(1) 356(1) 2) The 41st Constitutional Amendment curtailed the Governor's term from 5 years to 4 years 41 5 4 3) The Sarkaria Commission advised that Governors should not be removed before completing their term unless in rare and compelling circumstances","options":{"A":"2 & 3 only","B":"1 & 3 correct","C":"1 & 2 correct","D":"3 only"},"correct":"B","answer_line":"Answer: (B) 1 & 3 correct","explanation":"**Answer:** 1 & 3 correct. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":226,"page":278,"question":"Consider the following statements: 1. The Governor can dissolve the State Legislative Assembly 2. The President has no such power regarding the Lok Sabha","options":{"A":"Only 1","B":"Only 2","C":"Both 1 and 2","D":"Neither 1 nor 2"},"correct":"A","answer_line":"Answer: (A) Only 1","explanation":"**Answer:** Only 1. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":227,"page":279,"question":"The President is elected by an electoral college, while the Governor is _______., _______","options":{"A":"Directly elected","B":"Appointed by the President","C":"Nominated by Supreme Court","D":"Chosen by State Assembly"},"correct":"B","answer_line":"Answer: (B) Appointed by the President","explanation":"**Answer:** Appointed by the President. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":228,"page":281,"question":"Which of the following correctly reflects the legal implication of Article 255 regarding presidential or governor's assent to bills? - 255","options":{"A":"State law is void without written Governor assent.","B":"Mention of assent is mandatory for validity.","C":"Omission of prior recommendation doesn't invalidate law if assent is given.","D":"President's assent must precede legislative passage to be valid."},"correct":"C","answer_line":"Answer: (C) Omission of prior recommendation doesn't invalidate law if assent is given.","explanation":"**Answer:** Omission of prior recommendation doesn't invalidate law if assent is given.. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":229,"page":282,"question":"Consider the below statements: 1. Governor is state's constitutional head. 2. He acts solely on Council's advice Which of teh above statements holds true regarding Governor's executive powers?","options":{"A":"Both 1 and 2","B":"Only 1","C":"Only 2","D":"Neither 1 nor"},"correct":"B","answer_line":"Answer: (B) Only 1","explanation":"**Answer:** Only 1. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":230,"page":283,"question":"Which discretionary power allows a Governor to reserve a bill passed by the state legislature for the consideration of the President?","options":{"A":"To send a report to the President for the imposition of President's Rule.","B":"To reserve a bill for the President's consideration.","C":"To grant pardon in certain cases.","D":"To summon, prorogue, and dissolve the state legislative assembly. (, )"},"correct":"B","answer_line":"Answer: (B) To reserve a bill for the President's consideration.","explanation":"**Answer:** To reserve a bill for the President's consideration.. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":231,"page":284,"question":"Which article provides for the appointment of Governors in India?","options":{"A":"Article 170","B":"Article 154","C":"Article 155","D":"Article 168"},"correct":"C","answer_line":"Answer: (C) Article 155","explanation":"**Answer:** Article 155. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":232,"page":286,"question":"Who has the authority to appoint the Chief Minister of an Indian state?","options":{"A":"President","B":"Prime Minister","C":"Governor","D":"Chief Justice"},"correct":"C","answer_line":"Answer: (C) Governor","explanation":"**Answer:** Governor. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":233,"page":287,"question":"Under which Article does the Governor administer oath of office to the Chief Minister and other Ministers, allowing them to legally assume executive responsibilities in the State?","options":{"A":"Article 163","B":"Article 165","C":"Article 164","D":"Article 167"},"correct":"C","answer_line":"Answer: (C) Article 164","explanation":"**Answer:** Article 164. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":234,"page":288,"question":"To which body is the Council of Ministers in a State collectively accountable?","options":{"A":"The Governor","B":"The President of India","C":"The State Legislative Council","D":"The State Legislative Assembly"},"correct":"D","answer_line":"Answer: (D) The State Legislative Assembly","explanation":"**Answer:** The State Legislative Assembly. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":235,"page":289,"question":"Fill in the blanks: The collective responsibility clause for State CoMs appears in Article ___. ___","options":{"A":"164","B":"163","C":"154","D":"169"},"correct":"A","answer_line":"Answer: (A) 164","explanation":"**Answer:** 164. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":236,"page":290,"question":"Who was first woman Chief Minister of any state in India?","options":{"A":"Aruna Asaf Ali","B":"Sucheta Kripalani","C":"Anna Chandy","D":"Kamala Nehru"},"correct":"B","answer_line":"Answer: (B) Sucheta Kripalani","explanation":"**Answer:** Sucheta Kripalani. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":237,"page":292,"question":"Which state has a bicameral legislature?","options":{"A":"Tamil Nadu","B":"West Bengal","C":"Maharashtra","D":"Gujarat"},"correct":"C","answer_line":"Answer: (C) Maharashtra","explanation":"**Answer:** Maharashtra. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":238,"page":293,"question":"Which of the following Indian states does not have a Legislative Council?","options":{"A":"Uttar Pradesh","B":"Bihar","C":"Rajasthan","D":"Maharashtra"},"correct":"C","answer_line":"Answer: (C) Rajasthan","explanation":"**Answer:** Rajasthan. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":239,"page":294,"question":"Which of the following can recommend the creation of a Legislative Council in an Indian state?","options":{"A":"Governor of the state","B":"President","C":"State Legislative Assembly","D":"Chief Minister of the state"},"correct":"C","answer_line":"Answer: (C) State Legislative Assembly","explanation":"**Answer:** State Legislative Assembly. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":240,"page":295,"question":"What is the maximum number of members in a State Legislative Assembly as per the Constitution?","options":{"A":"450","B":"500","C":"550","D":"600"},"correct":"B","answer_line":"Answer: (B) 500","explanation":"**Answer:** 500. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":241,"page":296,"question":"Members of the Legislative Council of an Indian state as nearly as may be, ____ shall be elected by electorates consisting of members of municipalities, district boards and such other local authorities in the State as Parliament may by law specify., ____,","options":{"A":"1 12","B":"1 3","C":"1 2","D":"1 6"},"correct":"B","answer_line":"Answer: (B) 1 3","explanation":"**Answer:** 1 3. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":242,"page":297,"question":"Who can dissolve the Indian state Legislative Assembly before its term ends?","options":{"A":"Chief Minister","B":"Speaker","C":"Governor","D":"President"},"correct":"C","answer_line":"Answer: (C) Governor","explanation":"**Answer:** Governor. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":243,"page":298,"question":"The minimum age to vote in Indian State Legislative Election is _______. _______","options":{"A":"16 years","B":"18 years","C":"21 years","D":"25 years"},"correct":"B","answer_line":"Answer: (B) 18 years","explanation":"**Answer:** 18 years. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":244,"page":299,"question":"Which of the following is true regarding the Anglo-Indian representation in State Assemblies?","options":{"A":"The Governor still nominates one Anglo-Indian member to the Assembly. ( - )","B":"The provision was abolished by the 42nd Constitutional Amendment. ( 42 )","C":"The provision was abolished by the 104th Constitutional Amendment. ( 104 )","D":"Anglo-Indian members are elected through proportional representation. ( - )"},"correct":"C","answer_line":"Answer: (C) The provision was abolished by the 104th Constitutional Amendment. ( 104 )","explanation":"**Answer:** The provision was abolished by the 104th Constitutional Amendment. ( 104 ). **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":245,"page":300,"question":"Who decides on the question of whether a bill is a money bill in state legislature?","options":{"A":"Speaker of the Legislative Assembly","B":"Council of Ministers","C":"Finance Minister","D":"Governor"},"correct":"A","answer_line":"Answer: (A) Speaker of the Legislative Assembly","explanation":"**Answer:** Speaker of the Legislative Assembly. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":246,"page":301,"question":"Which type of bill cannot originate in the State Legislative Council of an Indian state? I. Money Bill II. Ordinary Bill","options":{"A":"Only I","B":"Only II","C":"Both I and II","D":"Neither I nor II"},"correct":"A","answer_line":"Answer: (A) Only I","explanation":"**Answer:** Only I. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":247,"page":302,"question":"Which of the following Bills can not be introduced in a State Legislature?","options":{"A":"Bill for Goods and Service Tax rate change","B":"Bill defining Parliamentary privileges","C":"Bill amending State List entries","D":"Bill altering High Court jurisdiction ("},"correct":"B","answer_line":"Answer: (B) Bill defining Parliamentary privileges","explanation":"**Answer:** Bill defining Parliamentary privileges. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":248,"page":303,"question":"The Contingency Fund of an Indian State is held by ________ . _______","options":{"A":"Chief Minister","B":"Finance Minister","C":"Governor","D":"State Legislature Speaker"},"correct":"C","answer_line":"Answer: (C) Governor","explanation":"**Answer:** Governor. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":249,"page":306,"question":"Which body holds the primary responsibility for making laws for the entire country in India?","options":{"A":"Supreme Court","B":"NITI Aayog","C":"Parliament","D":"Ministry of Finance"},"correct":"C","answer_line":"Answer: (C) Parliament","explanation":"**Answer:** Parliament. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":250,"page":307,"question":"Which body is primarily responsible for making laws specific to a particular state in India?","options":{"A":"State Cabinet","B":"High Court","C":"State Legislature","D":"Municipal Corporation"},"correct":"C","answer_line":"Answer: (C) State Legislature","explanation":"**Answer:** State Legislature. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":251,"page":308,"question":"Which of the following subjects is NOT included in the Union List under the Constitution, meaning it primarily falls under State legislative competence?","options":{"A":"Atomic energy","B":"Banking","C":"Public health","D":"Citizenship"},"correct":"C","answer_line":"Answer: (C) Public health","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":252,"page":309,"question":"In which of the following cases does the Union have exclusive power?","options":{"A":"Agriculture","B":"Public health","C":"Police","D":"Banking"},"correct":"D","answer_line":"Answer: (D) Banking","explanation":"**Answer:** Banking. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":253,"page":310,"question":"Which of the following subjects falls under the Concurrent List in the Indian Constitution?","options":{"A":"Police","B":"Criminal matters","C":"Radio and television","D":"Foreign affairs"},"correct":"B","answer_line":"Answer: (B) Criminal matters","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":254,"page":311,"question":"Consider the following statement 1. Police is a subject under the Union List 2. Agriculture falls under the State List Which of the statements given above is are correct?","options":{"A":"Only 1","B":"Only 2","C":"Both 1 and 2","D":"Neither 1 nor 2"},"correct":"B","answer_line":"Answer: (B) Only 2","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":255,"page":312,"question":"Consider the following statements: 1. Criminal law is exclusively under the Union List 2. Agriculture is a State subject 3. Trade and commerce within a State falls under the State List Which of the above is are correct?","options":{"A":"1 and 2 only","B":"2 and 3 only","C":"1 and 3 only","D":"1, 2 and 3"},"correct":"B","answer_line":"Answer: (B) 2 and 3 only","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":256,"page":313,"question":"The _____ List in Schedule VII deals solely with matters of national importance like defence and foreign affairs. VII _____","options":{"A":"Union","B":"State","C":"Concurrent","D":"Residuary"},"correct":"A","answer_line":"Answer: (A) Union","explanation":"**Answer:** Union. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":257,"page":314,"question":"Which Article empowers the Parliament to create laws on State List subjects under national interest?","options":{"A":"Article 249","B":"Article 253","C":"Article 248","D":"Article 254"},"correct":"A","answer_line":"Answer: (A) Article 249","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":258,"page":315,"question":"The Rajya Sabha's special power under Art 249 allows it to authorise Parliament to legislate on a ____ List subject. 249 ____","options":{"A":"State","B":"Union","C":"Concurrent","D":"Residuary"},"correct":"A","answer_line":"Answer: (A) State","explanation":"**Answer:** State. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":259,"page":316,"question":"Under which Article can the Union legislate on a State subject for implementing international treaties and agreements, ensuring India fulfills its international obligations?","options":{"A":"Article 250","B":"Article 252","C":"Article 253","D":"Article 258"},"correct":"C","answer_line":"Answer: (C) Article 253","explanation":"**Answer:** Article 253. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":260,"page":317,"question":"Which of the following statement is correct regarding the article 253 of Indian Constitution? 253 ? I. It is found in Part XI of the Constitution II. It relates to the Legislation for giving effect to international agreements","options":{"A":"Only","B":"Only II","C":"Both I and II","D":"Neither I nor II"},"correct":"C","answer_line":"Answer: (C) Both I and II","explanation":"**Answer:** Both I and II. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":261,"page":318,"question":"Which Article allows Parliament to legislate on a subject in the State List during a National Emergency?","options":{"A":"Article 250","B":"Article 256","C":"Article 254","D":"Article 352"},"correct":"A","answer_line":"Answer: (A) Article 250","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":262,"page":319,"question":"In case of a conflict between Central and State law on a Concurrent List subject, the State law prevails only if:","options":{"A":"It is passed by a two-thirds majority","B":"It has received Presidential assent","C":"It is supported by a Supreme Court ruling","D":"The Rajya Sabha passes it"},"correct":"B","answer_line":"Answer: (B) It has received Presidential assent","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":263,"page":320,"question":"Which of the following statements is are correct? 1) If a State law on a Concurrent List subject is reserved for the President and receives assent, it overrides the existing Union law on the same subject in that state 2) Parliament can later nullify such a State law by passing another law on the same subject","options":{"A":"Only 1","B":"Only 2","C":"Both 1 and 2","D":"Neither 1 nor 2"},"correct":"C","answer_line":"Answer: (C) Both 1 and 2","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."},{"num":264,"page":321,"question":"Consider the following statements: 1. The Concurrent List allows both Centre and States to legislate. 2. In case of conflict, State law prevails over Union law, Which of the above is are correct?","options":{"A":"Only 1","B":"Only 2","C":"Both 1 and 2","D":"Neither 1 nor 2"},"correct":"A","answer_line":"Answer: (A) Only 1","explanation":"The **Seventh Schedule** distributes legislative subjects among the **Union List, State List and Concurrent List**. **SSC Key Point:** Union + State + Concurrent = Schedule VII."}];
+const state = Array(questions.length).fill(null);
+
+function render() {
+  const root=document.getElementById('questions');
+  root.innerHTML='';
+  questions.forEach((q,i)=>{
+    const card=document.createElement('div'); card.className='card'; card.id='q'+i;
+    const qn=document.createElement('div'); qn.className='qnum'; qn.textContent='Question '+(i+1);
+    const qt=document.createElement('div'); qt.className='question'; qt.textContent=q.question;
+    card.append(qn,qt);
+    Object.entries(q.options).forEach(([letter,text])=>{
+      const b=document.createElement('button'); b.className='option';
+      b.textContent='('+letter+') '+text;
+      b.onclick=()=>answer(i,letter,b);
+      card.appendChild(b);
+    });
+    const fb=document.createElement('div'); fb.className='feedback'; fb.style.display='none'; fb.id='fb'+i;
+    card.appendChild(fb);
+    root.appendChild(card);
+  });
+}
+function answer(i,letter,clicked){
+  if(state[i]!==null) return;
+  state[i]=letter;
+  const q=questions[i];
+  const card=document.getElementById('q'+i);
+  card.querySelectorAll('.option').forEach(b=>{
+    b.disabled=true;
+    const l=(b.textContent.match(/^\(([A-D])\)/)||[])[1];
+    if(l===q.correct) {
+      b.classList.add('correct');
+      if(letter===q.correct) b.classList.add('result-correct');
+      else b.classList.add('correct-answer');
+    }
+    if(l===letter && letter!==q.correct) {
+      b.classList.add('wrong','result-wrong');
+    }
+    if(l===letter) b.classList.add('selected');
+  });
+  const fb=document.getElementById('fb'+i);
+  const ok=letter===q.correct;
+  fb.className='feedback '+(ok?'good':'bad');
+  fb.style.display='block';
+  fb.innerHTML='<strong>'+ (ok?'Correct':'Incorrect') +'</strong><br>'+
+    escapeHtml(q.answer_line)+
+    (q.explanation ? '<div class="explanation"><strong>Explanation:</strong><br>'+escapeHtml(q.explanation).replace(/\n/g,'<br>')+'</div>' : '');
+  updateStats();
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+
+let activeCollection = null;
+
+function toggleCollection(type){
+  const panel=document.getElementById('collectionPanel');
+  if(activeCollection===type){
+    panel.classList.remove('show');
+    activeCollection=null;
+    return;
+  }
+  activeCollection=type;
+  panel.classList.add('show');
+  renderCollection(type);
+}
+
+function renderCollection(type){
+  const title=document.getElementById('collectionTitle');
+  const list=document.getElementById('collectionList');
+  let indexes=[];
+  if(type==='correct') indexes=state.map((x,i)=>x!==null && x===questions[i].correct ? i : -1).filter(i=>i>=0);
+  if(type==='wrong') indexes=state.map((x,i)=>x!==null && x!==questions[i].correct ? i : -1).filter(i=>i>=0);
+  if(type==='unvisited') indexes=state.map((x,i)=>x===null ? i : -1).filter(i=>i>=0);
+
+  const names={correct:'✓ Correct Questions',wrong:'✕ Incorrect Questions',unvisited:'○ Unvisited Questions'};
+  title.textContent=names[type]+' ('+indexes.length+')';
+  list.innerHTML='';
+  if(!indexes.length){
+    list.innerHTML='<span style="font-size:12px;color:#667085">No questions in this collection.</span>';
+    return;
+  }
+  indexes.forEach(i=>{
+    const b=document.createElement('button');
+    b.className='collection-item';
+    b.textContent='Q'+(i+1);
+    b.onclick=()=>{
+      const target=document.getElementById('q'+i);
+      if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    list.appendChild(b);
+  });
+}
+
+function updateStats(){
+  const attempted=state.filter(x=>x!==null).length;
+  const correct=state.filter((x,i)=>x!==null && x===questions[i].correct).length;
+  const wrong=attempted-correct;
+  const unvisited=questions.length-attempted;
+  document.getElementById('correct').textContent=correct;
+  document.getElementById('wrong').textContent=wrong;
+  document.getElementById('unvisited').textContent=unvisited;
+  document.getElementById('attempted').textContent=attempted;
+  document.getElementById('progress').style.width=(attempted/questions.length*100)+'%';
+  document.getElementById('correctCount2').textContent=correct;
+  document.getElementById('wrongCount2').textContent=wrong;
+  document.getElementById('unvisitedCount2').textContent=unvisited;
+  if(activeCollection) renderCollection(activeCollection);
+  if(attempted===questions.length){
+    const pct=(correct/questions.length*100).toFixed(2);
+    const f=document.getElementById('final'); f.style.display='block';
+    f.innerHTML='<strong>Final Score</strong><br>'+correct+' / '+questions.length+
+      ' correct ('+pct+'%)<br><br><button class="reset" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">Review Test</button>';
+  }
+}
+
+function finishTest(){
+  const attempted=state.filter(x=>x!==null).length;
+  const correct=state.filter((x,i)=>x!==null && x===questions[i].correct).length;
+  const wrong=attempted-correct;
+  const unvisited=questions.length-attempted;
+  const pct=(correct/questions.length*100).toFixed(2);
+
+  const f=document.getElementById('final');
+  f.style.display='block';
+  f.innerHTML='<strong>Test Finished</strong>'+
+    '<div class="finish-summary">'+
+    '<strong>Correct:</strong> '+correct+'<br>'+
+    '<strong>Incorrect:</strong> '+wrong+'<br>'+
+    '<strong>Unvisited:</strong> '+unvisited+'<br>'+
+    '<strong>Attempted:</strong> '+attempted+' / '+questions.length+'<br>'+
+    '<strong>Score:</strong> '+correct+' / '+questions.length+' ('+pct+'%)'+
+    '</div>';
+  f.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+render();
+</script>
+</body>
+</html>

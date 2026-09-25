@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>SSC CGL 2026 Polity — Part 1 Test</title>
+<style>
+:root { --bg:#f5f7fb; --card:#fff; --text:#172033; --muted:#667085; --border:#d9dee8; --accent:#2563eb; --good:#16803c; --bad:#c62828; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--text)}
+.header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border);padding:12px 14px}
+.title{font-size:20px;font-weight:700;margin-bottom:10px}
+.stats{display:flex;gap:8px;flex-wrap:wrap}
+.stat{padding:7px 10px;border-radius:999px;background:#eef2f7;font-size:13px;font-weight:700}
+.stat.correct{background:#e8f7ee;color:var(--good)}
+.stat.wrong{background:#fdecec;color:var(--bad)}
+.stat.unvisited{background:#fff4db;color:#8a5a00}
+.progress{height:8px;background:#e9edf3;border-radius:10px;overflow:hidden;margin-top:10px}
+.progress>div{height:100%;background:var(--accent);width:0}
+.container{max-width:900px;margin:18px auto;padding:0 12px 40px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.qnum{font-weight:800;color:var(--accent);margin-bottom:8px}
+.question{font-size:17px;line-height:1.5;font-weight:600;margin-bottom:14px}
+.option{display:block;width:100%;text-align:left;border:1px solid var(--border);background:#fff;border-radius:10px;padding:12px;margin:8px 0;font-size:15px;cursor:pointer}
+.option:hover{border-color:var(--accent)}
+.option.selected{border-color:var(--accent);background:#eef4ff}
+.option.correct{border-color:var(--good);background:#e8f7ee;color:#11652f}
+.option.wrong{border-color:var(--bad);background:#fdecec;color:#a61b1b}
+.option:disabled{cursor:default}
+.option.result-correct::after{content:'✓';float:right;font-size:20px;font-weight:800;color:var(--good);margin-left:10px}
+.option.result-wrong::after{content:'✕';float:right;font-size:20px;font-weight:800;color:var(--bad);margin-left:10px}
+.option.correct-answer::after{content:'✓';float:right;font-size:20px;font-weight:800;color:var(--good);margin-left:10px}
+.feedback{margin-top:12px;padding:12px;border-radius:10px;background:#f3f5f8;line-height:1.5}
+.feedback.good{background:#e8f7ee}
+.feedback.bad{background:#fdecec}
+.explanation{margin-top:8px}
+
+
+.finish-test-btn{border:0;background:#172033;color:#fff;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer}
+.finish-test-btn:hover{background:#0f172a}
+.finish-summary{margin-top:12px;padding:14px;border-radius:10px;background:#f8fafc;border:1px solid var(--border);line-height:1.6}
+
+.collections{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.collection-btn{border:1px solid var(--border);background:#fff;color:var(--text);padding:7px 10px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+.collection-btn:hover{border-color:var(--accent)}
+.collection-panel{display:none;margin-top:10px;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px}
+.collection-panel.show{display:block}
+.collection-title{font-size:13px;font-weight:800;margin-bottom:7px}
+.collection-list{display:flex;flex-wrap:wrap;gap:6px}
+.collection-item{border:1px solid var(--border);background:#fff;border-radius:7px;padding:6px 9px;font-size:12px;cursor:pointer}
+.collection-item:hover{border-color:var(--accent);color:var(--accent)}
+
+.final{display:none;background:#fff;border:2px solid var(--accent);border-radius:14px;padding:20px;margin:20px 0;font-size:17px}
+.reset{border:0;background:var(--accent);color:#fff;padding:11px 16px;border-radius:9px;font-weight:700;cursor:pointer}
+@media(max-width:600px){.title{font-size:18px}.question{font-size:16px}.container{padding:0 8px 30px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="title">SSC CGL 2026 Polity — Part 1 Online Test</div>
+  <div class="stats">
+    <div class="stat correct">Correct: <span id="correct">0</span></div>
+    <div class="stat wrong">Incorrect: <span id="wrong">0</span></div>
+    <div class="stat unvisited">Unvisited: <span id="unvisited">70</span></div>
+    <div class="stat">Attempted: <span id="attempted">0</span>/70</div>
+  </div>
+  <div class="progress"><div id="progress"></div></div>
+  <div style="margin-top:8px;font-size:12px;color:#667085">
+    <span style="color:#16803c;font-weight:700">✓ Correct</span>
+    &nbsp;&nbsp;
+    <span style="color:#c62828;font-weight:700">✕ Incorrect</span>
+  </div>
+  <div style="margin-top:10px">
+    <button class="finish-test-btn" onclick="finishTest()">Finish Test</button>
+  </div>
+  <div class="collections">
+    <button class="collection-btn" onclick="toggleCollection('correct')">✓ Correct Collection <span id="correctCount2">0</span></button>
+    <button class="collection-btn" onclick="toggleCollection('wrong')">✕ Incorrect Collection <span id="wrongCount2">0</span></button>
+    <button class="collection-btn" onclick="toggleCollection('unvisited')">○ Unvisited Collection <span id="unvisitedCount2">70</span></button>
+  </div>
+  <div id="collectionPanel" class="collection-panel">
+    <div id="collectionTitle" class="collection-title"></div>
+    <div id="collectionList" class="collection-list"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div id="questions"></div>
+  <div class="final" id="final"></div>
+</div>
+
+<script>
+const questions = [{"num":54,"page":68,"question":"In which Part of the Constitution are the provisions relating to Civil Services, including recruitment and conditions of service for government employees, contained?","options":{"A":"Part IX","B":"Part XIV","C":"Part XV","D":"Part XVI"},"correct":"B","answer_line":"Answer: (B) Part XIV","explanation":"**Answer:** Part XIV. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":55,"page":69,"question":"Which Article defines State and Union Territories for the purposes of the Constitution?","options":{"A":"Article 1","B":"Article 3","C":"Article 239","D":"Article 240"},"correct":"A","answer_line":"Answer: (A) Article 1","explanation":"**Answer:** Article 1. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":56,"page":70,"question":"Consider the following statements: 1. Delegated legislation is made by administrative authorities. 2. It cannot be challenged in a court of law. Which of the above statements is are correct? 2.?","options":{"A":"Only 1","B":"Only 2","C":"Both 1 and 2","D":"Neither 1 nor 2"},"correct":"A","answer_line":"Answer: (A) Only 1","explanation":"**Delegated legislation** is law-making by the executive/administrative authority under powers delegated by the legislature. It **can be challenged in courts** if it exceeds the parent law or constitutional limits."},{"num":57,"page":71,"question":"Under which Article of the Indian Constitution is Hindi in Devanagari script declared as the official language of the Union?","options":{"A":"Article 348","B":"Article 343","C":"Article 344","D":"Article 351"},"correct":"B","answer_line":"Answer: (B) Article 343","explanation":"**Article 343** provides that the official language of the Union is **Hindi in Devanagari script**. **SSC Key Point:** English also continues for official purposes under statutory provisions."},{"num":58,"page":72,"question":"Which part of the Indian Constitution is known as the \"Magna Carta of India\" and guarantees fundamental rights to the citizens?","options":{"A":"Part I","B":"Part II","C":"Part III","D":"Part IV"},"correct":"C","answer_line":"Answer: (C) Part III","explanation":"**Answer:** Part III. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":59,"page":73,"question":"Which of the following statements is correct in the context of constitutional interpretation and judicial doctrine?","options":{"A":"The Constitution of India clearly defines the term \"basic structure\" under Article 368. ( 368 \" \" )","B":"The Judiciary rejected the idea of spirit-based interpretation and strictly follows the written text.","C":"The \"basic structure\" doctrine was brought into existence by the Supreme Court to protect the fundamental features of the Constitution ( \" \" )","D":"The Parliament can propose amendments that repeal judicial principles without limitation."},"correct":"C","answer_line":"Answer: (C) The \"basic structure\" doctrine was brought into existence by the Supreme Court to protect the fundamental features of the Constitution ( \" \" )","explanation":"**Answer:** The \"basic structure\" doctrine was brought into existence by the Supreme Court to protect the fundamental features of the Constitution ( \" \" ). **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":60,"page":74,"question":"Who among the following is the final interpreter of the Indian Constitution?","options":{"A":"The President of India","B":"The Prime Minister","C":"The Supreme Court of India","D":"The Parliament"},"correct":"C","answer_line":"Answer: (C) The Supreme Court of India","explanation":"The **Supreme Court of India** is the final interpreter of the Constitution through judicial review and constitutional adjudication. **SSC Key Point:** Article 141 makes Supreme Court law binding on all courts in India."},{"num":61,"page":75,"question":"Identify the following constitutional attributes with their respective democratic values:","options":{"A":"a - ii, b - i, c - iv, d - iii","B":"a - i, b - ii, c - iii, d - iv","C":"a - iii, b - iv, c - i, d - ii","D":"a - iv, b - iii, c - ii, d - i Column A A Column B B a. Fundamental Duties i. Grassroots democracy b. Equal voting rights ii. Respect for individual conscience c. Local self-government provisions responsibilities iii. Recognition of citizens' d. Religious freedom assurance iv Principle of universal franchise"},"correct":"C","answer_line":"Answer: (C) a - iii, b - iv, c - i, d - ii","explanation":"**Answer:** a - iii, b - iv, c - i, d - ii. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":62,"page":78,"question":"What is the correct sequence of values, from first to last, as mentioned in the Preamble of the Indian Constitution?","options":{"A":"Justice, Equality, Liberty, Fraternity","B":"Liberty, Justice, Equality, Fraternity","C":"Equality, Liberty, Justice, Fraternity","D":"Justice, Liberty, Equality, Fraternity"},"correct":"D","answer_line":"Answer: (D) Justice, Liberty, Equality, Fraternity","explanation":"The Preamble lists the objectives in this order: **Justice → Liberty → Equality → Fraternity**. **SSC Key Point:** Justice is specified as social, economic and political."},{"num":63,"page":79,"question":"Which of the following is incorrectly matched with its description from the Preamble? (Preamble)?","options":{"A":"Sovereign - Independent in external and internal matters ( - )","B":"Socialist - Promotes social equality","C":"Secular - Promotes one religion above others","D":"Democratic - Government elected by the people"},"correct":"C","answer_line":"Answer: (C) Secular - Promotes one religion above others","explanation":"**Answer:** Secular - Promotes one religion above others. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":64,"page":80,"question":"Which Part of the Indian Constitution contains provisions related to elections conducted by the Election Commission of India for Parliament, State Legislatures, and offices of President and Vice-President?","options":{"A":"Part XV","B":"Part XVI","C":"Part XVII","D":"Part XVIII"},"correct":"A","answer_line":"Answer: (A) Part XV","explanation":"**Part XV (Articles 324–329)** deals with elections. **Article 324** vests the superintendence, direction and control of elections in the Election Commission of India."},{"num":65,"page":81,"question":"Which of the following words is mentioned in the preamble of the Indian constitution regarding ‘Justice’?","options":{"A":"Secular","B":"Socialist","C":"Sovereign","D":"Economic"},"correct":"D","answer_line":"Answer: (D) Economic","explanation":"**Answer:** Economic. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":66,"page":82,"question":"Which amendment added the terms \"Socialist\" and \"Secular\" to the Preamble, significantly expanding its ideological foundation during constitutional restructuring?","options":{"A":"24th","B":"31st","C":"42nd","D":"44th"},"correct":"C","answer_line":"Answer: (C) 42nd","explanation":"The **42nd Constitutional Amendment, 1976** inserted **Socialist, Secular and Integrity** into the Preamble. The Supreme Court has held that the Preamble is part of the Constitution."},{"num":67,"page":83,"question":"The Preamble to the Indian Constitution declares India to be a Sovereign, Socialist, Secular, Democratic Republic. Which of these terms were added to the Preamble by the 42nd constitutional Amendment Act, 1976? 42nd, 1976?","options":{"A":"Socialist, Secular","B":"Sovereign, Democratic","C":"Republic, Democratic","D":"Justice, Liberty"},"correct":"A","answer_line":"Answer: (A) Socialist, Secular","explanation":"The **42nd Constitutional Amendment, 1976** inserted **Socialist, Secular and Integrity** into the Preamble. The Supreme Court has held that the Preamble is part of the Constitution."},{"num":68,"page":85,"question":"Which of the following article of the Indian Constitution is related with Admission or establishment of new States?","options":{"A":"Article 2","B":"Article 4","C":"Article 8","D":"Article 7"},"correct":"A","answer_line":"Answer: (A) Article 2","explanation":"**Answer:** Article 2. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":69,"page":86,"question":"Under which Article does Parliament have the power to create a new State or alter boundaries of existing States, with President's recommendation and potential ratification by States?","options":{"A":"Article 2","B":"Article 3","C":"Article 4","D":"Article 368"},"correct":"B","answer_line":"Answer: (B) Article 3","explanation":"**Answer:** Article 3. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":70,"page":87,"question":"Which Article empowers Parliament to alter state boundaries and form new states?","options":{"A":"Article 1","B":"Article 2","C":"Article 4","D":"Article 3"},"correct":"D","answer_line":"Answer: (D) Article 3","explanation":"**Answer:** Article 3. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":71,"page":88,"question":"Which of the following is not permitted under Article 3 of the Constitution? 3?","options":{"A":"Legislature's veto over state reorganisation","B":"Increase in area of a state","C":"Change of name of a state","D":"Formation of a new state from a Union Territory"},"correct":"A","answer_line":"Answer: (A) Legislature's veto over state reorganisation","explanation":"**Answer:** Legislature's veto over state reorganisation. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":72,"page":89,"question":"Which authority can alter the boundaries of Indian states?","options":{"A":"Supreme Court","B":"State Legislative Assemblies","C":"President of India","D":"Parliament of India"},"correct":"D","answer_line":"Answer: (D) Parliament of India","explanation":"**Answer:** Parliament of India. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":73,"page":90,"question":"An Indian state can be divided or its boundary altered by which of the following?","options":{"A":"The State Legislature","B":"Parliament","C":"President","D":"Supreme Court"},"correct":"B","answer_line":"Answer: (B) Parliament","explanation":"**Answer:** Parliament. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":74,"page":91,"question":"Establishment of 28th new state Jharkhand in India was executed in which of the following year? 28?","options":{"A":"2001","B":"2000","C":"2010","D":"2014"},"correct":"B","answer_line":"Answer: (B) 2000","explanation":"**Answer:** 2000. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":75,"page":92,"question":"Andhra Pradesh was bifurcated to bring Telangana as 29th state of Indian constitution in which of the following year? 29","options":{"A":"2011","B":"2012","C":"2014","D":"2018"},"correct":"C","answer_line":"Answer: (C) 2014","explanation":"**Answer:** 2014. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":76,"page":93,"question":"Which of the following amendment act of the Indian constitution made Sikkim a full-fledged State of the India?","options":{"A":"38th Amendment act, 1975","B":"35th Amendment act, 1974","C":"42nd Amendment act, 1976","D":"36th Amendment act, 1975"},"correct":"D","answer_line":"Answer: (D) 36th Amendment act, 1975","explanation":"**Answer:** 36th Amendment act, 1975. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":77,"page":94,"question":"Fill in the blanks: Zonal Councils were created by the ______ Act, 1956. ______, 1956","options":{"A":"States Reorganisation","B":"Finance Commission","C":"Panchayati Raj","D":"Representation of People"},"correct":"A","answer_line":"Answer: (A) States Reorganisation","explanation":"**Answer:** States Reorganisation. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":78,"page":95,"question":"Arrange the following events in chronological order: a. Eastern Zonal Council meeting 2022 b. States Reorganisation Act passed c. First Central Zonal Council meeting","options":{"A":"b-c-a","B":"c-b-a","C":"a-b-c","D":"b-a-c"},"correct":"A","answer_line":"Answer: (A) b-c-a","explanation":"**Answer:** b-c-a. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":79,"page":96,"question":"Which of the following pairs of newly created States Union Territories after the States Reorganisation Act, 1956 is correctly matched?, 1956","options":{"A":"Jharkhand - 2001","B":"Uttarakhand-1998","C":"Chhattisgarh-2000","D":"Telangana - 2001"},"correct":"C","answer_line":"Answer: (C) Chhattisgarh-2000","explanation":"**Answer:** Chhattisgarh-2000. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":80,"page":98,"question":"Who appoints the officer for registering migrants as citizens?","options":{"A":"State Government","B":"Central government of India","C":"Supreme Court","D":"President of India"},"correct":"B","answer_line":"Answer: (B) Central government of India","explanation":"**Answer:** Central government of India. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":81,"page":99,"question":"The 'Citizenship (Amendment) Act', 2019, aims to provide a fast-track to Indian citizenship for minorities from which three countries? ', 2019,","options":{"A":"Nepal, Bhutan, Myanmar","B":"Afghanistan, Bangladesh, Pakistan","C":"Sri Lanka, China, Nepal","D":"Pakistan, Iraq, Iran"},"correct":"B","answer_line":"Answer: (B) Afghanistan, Bangladesh, Pakistan","explanation":"**Answer:** Afghanistan, Bangladesh, Pakistan. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":82,"page":100,"question":"What is the role of the Foreigners' Tribunal in the NRC (National Register of Citizens) process? NRC?","options":{"A":"To conduct the Census","B":"To issue voter ID cards","C":"To deport illegal immigrants","D":"To verify citizenship claims of individuals excluded from the NRC (NRC )"},"correct":"D","answer_line":"Answer: (D) To verify citizenship claims of individuals excluded from the NRC (NRC )","explanation":"**Answer:** To verify citizenship claims of individuals excluded from the NRC (NRC ). **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":83,"page":104,"question":"The Indian Supreme Court's power of judicial review primarily arises from which Article, enabling courts to invalidate laws inconsistent with or violative of Fundamental Rights guaranteed by the Constitution?","options":{"A":"Article 12","B":"Article 13","C":"Article 15","D":"Article 17"},"correct":"B","answer_line":"Answer: (B) Article 13","explanation":"**Answer:** Article 13. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":84,"page":105,"question":"Which of the following Article provides that laws inconsistent with Fundamental Rights shall be void?","options":{"A":"Article 12","B":"Article 13","C":"Article 19","D":"Article 32"},"correct":"B","answer_line":"Answer: (B) Article 13","explanation":"**Answer:** Article 13. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":85,"page":106,"question":"Fill in the Blank: Doctrine of Severability allows the _____ part of a law to be retained. _____","options":{"A":"Repealed","B":"Inconsistent","C":"Valid","D":"Unconstitutional"},"correct":"C","answer_line":"Answer: (C) Valid","explanation":"**Answer:** Valid. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":86,"page":108,"question":"The concept of \"Reasonable Classification\" as a limitation to the Right to Equality (Article 14) was established in which case?","options":{"A":"Kesavananda Bharati v. State of Kerala","B":"State of West Bengal v. Anwar Ali Sarkar","C":"Maneka Gandhi v. Union of India","D":"Golakhnath Case v. State of Punjab & Anrs."},"correct":"B","answer_line":"Answer: (B) State of West Bengal v. Anwar Ali Sarkar","explanation":"**Answer:** State of West Bengal v. Anwar Ali Sarkar. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":87,"page":109,"question":"What subject matter is addressed under Article 17 of the Indian Constitution? 17?","options":{"A":"Abolition of untouchability","B":"Abolition of feudal titles","C":"Right to equality","D":"Right to freedom"},"correct":"A","answer_line":"Answer: (A) Abolition of untouchability","explanation":"**Answer:** Abolition of untouchability. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":88,"page":111,"question":"Right to freedom in our constitution is mentioned in which of the following sets of articles?","options":{"A":"Art 5 to 11","B":"Art 1 to 4","C":"Art 19 to 22","D":"Art 36 to 51"},"correct":"C","answer_line":"Answer: (C) Art 19 to 22","explanation":"**Answer:** Art 19 to 22. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":89,"page":112,"question":"The \"Golden Triangle\" in Indian constitutional jurisprudence refers to","options":{"A":"Articles 14, 19, and 21","B":"Articles 368, 371, and 372","C":"Articles 32, 136, and 226","D":"Articles 280, 281, and 282"},"correct":"A","answer_line":"Answer: (A) Articles 14, 19, and 21","explanation":"**Answer:** Articles 14, 19, and 21. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":90,"page":113,"question":"Which of the following statements best captures the distinction between the concepts of 'Procedure Established by Law' and 'Due Process of Law' in the Indian context, especially after the landmark judgment in Maneka Gandhi v. Union of India (1978)? (1978),?","options":{"A":"Procedure Established by Law' gives the judiciary the power to assess both the fairness and the content of the law ( ' )","B":"Due Process of Law' requires that any law depriving a person of life or liberty must not only follow proper legal procedure but also be just, fair, and reasonable. ( ' (Due Process of Law),,, )","C":"'Procedure Established by Law' was adopted from the American Constitution, while 'Due Process of Law' is a British doctrine. (\" ', ' ' )","D":"The Indian Constitution explicitly uses the phrase 'Due Process of Law' in Article 21. ( 21 ' ' (Due Process of Law) )"},"correct":"B","answer_line":"Answer: (B) Due Process of Law' requires that any law depriving a person of life or liberty must not only follow proper legal procedure but also be just, fair, and reasonable. ( ' (Due Process of Law),,, )","explanation":"**Answer:** Due Process of Law' requires that any law depriving a person of life or liberty must not only follow proper legal procedure but also be just, fair, and reasonable. ( ' (Due Process of Law),,, ). **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":91,"page":114,"question":"Which of the following are included under the scope of Article 21 as interpreted by the Supreme Court?, 21 - ? 1. Right to sleep 2. Right to shelter 3. Right to reputation 4. Right to die","options":{"A":"1, 2 and 3 only","B":"1, 3 and 4 only","C":"2 and 4 only","D":"1, 2, 3 and 4"},"correct":"A","answer_line":"Answer: (A) 1, 2 and 3 only","explanation":"**Answer:** 1, 2 and 3 only. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":92,"page":115,"question":"The right to privacy was recognized in — ______ —","options":{"A":"Minerva Mills v. Union of India","B":"K.S. Puttaswamy v. Union of India","C":"ADM Jabalpur v. Shivkant Shukla","D":"Maneka Gandhi v. Union of India"},"correct":"B","answer_line":"Answer: (B) K.S. Puttaswamy v. Union of India","explanation":"**Answer:** K.S. Puttaswamy v. Union of India. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":93,"page":116,"question":"In the context of illegal demolition of private property by State authorities, which of the following statements correctly reflects the constitutional and legal position as upheld in recent judgments by the Supreme Court and High Courts of India?","options":{"A":"Demolition of private property by municipal authorities is permissible without prior notice if the structure is deemed unauthorized under the local municipal act, as natural justice can be excluded in matters of urban planning enforcement.","B":"The right to property under Article 300A provides no protection against demolitions carried out under state legislation, as long as public interest is cited, even without following due process.","C":"Any demolition of private property by state authorities without prior notice and opportunity to be heard is a violation of the rule of law, Article 14, and Article 21, regardless of whether the structure is illegal or not.","D":"Courts have consistently upheld that demolitions without court approval are valid if the property is on public land, as the doctrine of proportionality does not apply to illegal encroachments."},"correct":"C","answer_line":"Answer: (C) Any demolition of private property by state authorities without prior notice and opportunity to be heard is a violation of the rule of law, Article 14, and Article 21, regardless of whether the structure is illegal or not.","explanation":"**Answer:** Any demolition of private property by state authorities without prior notice and opportunity to be heard is a violation of the rule of law, Article 14, and Article 21, regardless of whether the structure is illegal or not.. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":94,"page":118,"question":"Right to eduction was added to our constitution mentioned in which of the following article?","options":{"A":"Art 51","B":"Art 51A","C":"Art 21","D":"Art 21A"},"correct":"D","answer_line":"Answer: (D) Art 21A","explanation":"**Answer:** Art 21A. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":95,"page":119,"question":"Through which Constitutional Amendment was Article 21A introduced, mandating free and compulsory education as a Fundamental Right for children between 6 and 14 years of age? 21A, 6 14","options":{"A":"42nd Amendment Act","B":"86th Amendment Act","C":"93rd Amendment Act","D":"44th Amendment Act"},"correct":"B","answer_line":"Answer: (B) 86th Amendment Act","explanation":"**Answer:** 86th Amendment Act. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":96,"page":120,"question":"Which of the following statement is correct regarding the fundamental rights given in the Indian constitution? I. Article 30 is related with Abolition of titles. Il. Article 22 is related with Prohibition of employment of children in factories, etc.","options":{"A":"Only I","B":"Only Il","C":"Both I and II","D":"Neither I nor II"},"correct":"D","answer_line":"Answer: (D) Neither I nor II","explanation":"**Answer:** Neither I nor II. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":97,"page":121,"question":"Which Constitutional Amendment Act made the Right to Education a Fundamental Right in India?","options":{"A":"44th Amendment Act, 1978","B":"42nd Amendment Act, 1976","C":"86th Amendment Act, 2002","D":"97th Amendment Act, 2011"},"correct":"C","answer_line":"Answer: (C) 86th Amendment Act, 2002","explanation":"**Answer:** 86th Amendment Act, 2002. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":98,"page":123,"question":"Q9. Under the Child and Adolescent Labour (Prohibition and Regulation) Amendment Act, 2016, which of the following scenarios would be considered a violation of the Act, even if done under the supervision of family or within a household enterprise?, 2016, -","options":{"A":"A 14-year-old helping her parents run their local handloom business after school hours and during vacations. ( 14 - )","B":"A 15-year-old employed part-time at a food delivery platform that classifies him as an independent \"gig worker.\" ( 15,, \" \" )","C":"A 16-year-old working full-time in a registered factory after completing high school, under hazardous working conditions. ( 16, )","D":"A 13-year-old learning carpentry skills on weekends under the mentorship of his uncle, with no monetary compensation. (13, )"},"correct":"C","answer_line":"Answer: (C) A 16-year-old working full-time in a registered factory after completing high school, under hazardous working conditions. ( 16, )","explanation":"**Answer:** A 16-year-old working full-time in a registered factory after completing high school, under hazardous working conditions. ( 16, ). **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":99,"page":125,"question":"Which of the following is not covered under Article 25 of the Indian Constitution? 25?","options":{"A":"Freedom of Conscience","B":"Right to profess and practice religion","C":"Right to propagate religion","D":"Right to religious conversion"},"correct":"D","answer_line":"Answer: (D) Right to religious conversion","explanation":"**Answer:** Right to religious conversion. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":100,"page":127,"question":"Which of the following article of Indian Constitution ensures the protection of minority interests?","options":{"A":"Article 28","B":"Article 24","C":"Article 31","D":"Article 29"},"correct":"D","answer_line":"Answer: (D) Article 29","explanation":"**Answer:** Article 29. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":101,"page":128,"question":"Which of the following article of Indian Constitution ensures the protection of minority interests?","options":{"A":"Article 28","B":"Article 24","C":"Article 31","D":"Article 29"},"correct":"D","answer_line":"Answer: (D) Article 29","explanation":"**Answer:** Article 29. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":102,"page":129,"question":"Which of the following article of the Indian constitution is related with the right of minorities to establish and administer educational institutions?","options":{"A":"Article 28","B":"Article 24","C":"Article 30","D":"Article 29"},"correct":"C","answer_line":"Answer: (C) Article 30","explanation":"**Answer:** Article 30. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":103,"page":130,"question":"Who among the following was NOT a member of the Constituent Assembly?","options":{"A":"Dr. B.R. Ambedkar","B":"Sardar Vallabhbhai Patel","C":"Mahatma Gandhi","D":"Jawaharlal Nehru"},"correct":"C","answer_line":"Answer: (C) Mahatma Gandhi","explanation":"**Mahatma Gandhi was not a member** of the Constituent Assembly. **Dr. B.R. Ambedkar, Sardar Vallabhbhai Patel and Jawaharlal Nehru** were members and played major roles in constitution-making. **SSC Key Point:** Gandhi did not serve as a member of the Constituent Assembly."},{"num":104,"page":132,"question":"Which of the following constitutional amendments removed the right to property from Part III?","options":{"A":"42nd Amendment","B":"44th Amendment","C":"52nd Amendment","D":"59th Amendment"},"correct":"B","answer_line":"Answer: (B) 44th Amendment","explanation":"**Answer:** 44th Amendment. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":105,"page":133,"question":"Which of the following was removed from the list of Fundamental Rights?","options":{"A":"Right to Equality","B":"Right to Property","C":"Right to Freedom","D":"Right against Exploitation"},"correct":"B","answer_line":"Answer: (B) Right to Property","explanation":"**Answer:** Right to Property. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."},{"num":106,"page":134,"question":"Article 300A of the constitution of India protects: 300A:","options":{"A":"Union property from State laws","B":"Right to property as legal right","C":"Right to carry on trade","D":"State property from Union laws"},"correct":"B","answer_line":"Answer: (B) Right to property as legal right","explanation":"**Answer:** Right to property as legal right. **SSC Key Point:** Remember this fact together with the constitutional article/body/term named in the question; such direct fact-based associations are frequently tested in SSC Polity questions."}];
+const state = Array(questions.length).fill(null);
+
+function render() {
+  const root=document.getElementById('questions');
+  root.innerHTML='';
+  questions.forEach((q,i)=>{
+    const card=document.createElement('div'); card.className='card'; card.id='q'+i;
+    const qn=document.createElement('div'); qn.className='qnum'; qn.textContent='Question '+(i+1);
+    const qt=document.createElement('div'); qt.className='question'; qt.textContent=q.question;
+    card.append(qn,qt);
+    Object.entries(q.options).forEach(([letter,text])=>{
+      const b=document.createElement('button'); b.className='option';
+      b.textContent='('+letter+') '+text;
+      b.onclick=()=>answer(i,letter,b);
+      card.appendChild(b);
+    });
+    const fb=document.createElement('div'); fb.className='feedback'; fb.style.display='none'; fb.id='fb'+i;
+    card.appendChild(fb);
+    root.appendChild(card);
+  });
+}
+function answer(i,letter,clicked){
+  if(state[i]!==null) return;
+  state[i]=letter;
+  const q=questions[i];
+  const card=document.getElementById('q'+i);
+  card.querySelectorAll('.option').forEach(b=>{
+    b.disabled=true;
+    const l=(b.textContent.match(/^\(([A-D])\)/)||[])[1];
+    if(l===q.correct) {
+      b.classList.add('correct');
+      if(letter===q.correct) b.classList.add('result-correct');
+      else b.classList.add('correct-answer');
+    }
+    if(l===letter && letter!==q.correct) {
+      b.classList.add('wrong','result-wrong');
+    }
+    if(l===letter) b.classList.add('selected');
+  });
+  const fb=document.getElementById('fb'+i);
+  const ok=letter===q.correct;
+  fb.className='feedback '+(ok?'good':'bad');
+  fb.style.display='block';
+  fb.innerHTML='<strong>'+ (ok?'Correct':'Incorrect') +'</strong><br>'+
+    escapeHtml(q.answer_line)+
+    (q.explanation ? '<div class="explanation"><strong>Explanation:</strong><br>'+escapeHtml(q.explanation).replace(/\n/g,'<br>')+'</div>' : '');
+  updateStats();
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+
+let activeCollection = null;
+
+function toggleCollection(type){
+  const panel=document.getElementById('collectionPanel');
+  if(activeCollection===type){
+    panel.classList.remove('show');
+    activeCollection=null;
+    return;
+  }
+  activeCollection=type;
+  panel.classList.add('show');
+  renderCollection(type);
+}
+
+function renderCollection(type){
+  const title=document.getElementById('collectionTitle');
+  const list=document.getElementById('collectionList');
+  let indexes=[];
+  if(type==='correct') indexes=state.map((x,i)=>x!==null && x===questions[i].correct ? i : -1).filter(i=>i>=0);
+  if(type==='wrong') indexes=state.map((x,i)=>x!==null && x!==questions[i].correct ? i : -1).filter(i=>i>=0);
+  if(type==='unvisited') indexes=state.map((x,i)=>x===null ? i : -1).filter(i=>i>=0);
+
+  const names={correct:'✓ Correct Questions',wrong:'✕ Incorrect Questions',unvisited:'○ Unvisited Questions'};
+  title.textContent=names[type]+' ('+indexes.length+')';
+  list.innerHTML='';
+  if(!indexes.length){
+    list.innerHTML='<span style="font-size:12px;color:#667085">No questions in this collection.</span>';
+    return;
+  }
+  indexes.forEach(i=>{
+    const b=document.createElement('button');
+    b.className='collection-item';
+    b.textContent='Q'+(i+1);
+    b.onclick=()=>{
+      const target=document.getElementById('q'+i);
+      if(target) target.scrollIntoView({behavior:'smooth',block:'start'});
+    };
+    list.appendChild(b);
+  });
+}
+
+function updateStats(){
+  const attempted=state.filter(x=>x!==null).length;
+  const correct=state.filter((x,i)=>x!==null && x===questions[i].correct).length;
+  const wrong=attempted-correct;
+  const unvisited=questions.length-attempted;
+  document.getElementById('correct').textContent=correct;
+  document.getElementById('wrong').textContent=wrong;
+  document.getElementById('unvisited').textContent=unvisited;
+  document.getElementById('attempted').textContent=attempted;
+  document.getElementById('progress').style.width=(attempted/questions.length*100)+'%';
+  document.getElementById('correctCount2').textContent=correct;
+  document.getElementById('wrongCount2').textContent=wrong;
+  document.getElementById('unvisitedCount2').textContent=unvisited;
+  if(activeCollection) renderCollection(activeCollection);
+  if(attempted===questions.length){
+    const pct=(correct/questions.length*100).toFixed(2);
+    const f=document.getElementById('final'); f.style.display='block';
+    f.innerHTML='<strong>Final Score</strong><br>'+correct+' / '+questions.length+
+      ' correct ('+pct+'%)<br><br><button class="reset" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">Review Test</button>';
+  }
+}
+
+function finishTest(){
+  const attempted=state.filter(x=>x!==null).length;
+  const correct=state.filter((x,i)=>x!==null && x===questions[i].correct).length;
+  const wrong=attempted-correct;
+  const unvisited=questions.length-attempted;
+  const pct=(correct/questions.length*100).toFixed(2);
+
+  const f=document.getElementById('final');
+  f.style.display='block';
+  f.innerHTML='<strong>Test Finished</strong>'+
+    '<div class="finish-summary">'+
+    '<strong>Correct:</strong> '+correct+'<br>'+
+    '<strong>Incorrect:</strong> '+wrong+'<br>'+
+    '<strong>Unvisited:</strong> '+unvisited+'<br>'+
+    '<strong>Attempted:</strong> '+attempted+' / '+questions.length+'<br>'+
+    '<strong>Score:</strong> '+correct+' / '+questions.length+' ('+pct+'%)'+
+    '</div>';
+  f.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+render();
+</script>
+</body>
+</html>
